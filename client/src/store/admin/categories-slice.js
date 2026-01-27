@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
+import { API_URL } from "@/config/api-config";
 
 const initialState = {
   isLoading: false,
@@ -11,7 +12,7 @@ export const addCategory = createAsyncThunk(
   async (formData, { rejectWithValue }) => {
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/admin/categories/add",
+        `${API_URL}/api/admin/categories/add`,
         formData,
         {
           withCredentials: true,
@@ -30,12 +31,9 @@ export const addCategory = createAsyncThunk(
 export const fetchAllCategories = createAsyncThunk(
   "/categories/fetchAllCategories",
   async () => {
-    const response = await axios.get(
-      "http://localhost:5000/api/admin/categories/get",
-      {
-        withCredentials: true,
-      },
-    );
+    const response = await axios.get(`${API_URL}/api/admin/categories/get`, {
+      withCredentials: true,
+    });
 
     return response.data;
   },
@@ -45,7 +43,7 @@ export const uploadCategoryIcon = createAsyncThunk(
   "/categories/uploadCategoryIcon",
   async ({ id, formData }) => {
     const response = await axios.post(
-      `http://localhost:5000/api/admin/categories/upload-icon/${id}`,
+      `${API_URL}/api/admin/categories/upload-icon/${id}`,
       formData,
       {
         withCredentials: true,
@@ -63,7 +61,7 @@ export const deleteCategory = createAsyncThunk(
   "/categories/deleteCategory",
   async (id) => {
     const response = await axios.delete(
-      `http://localhost:5000/api/admin/categories/delete/${id}`,
+      `${API_URL}/api/admin/categories/delete/${id}`,
       {
         withCredentials: true,
       },
@@ -77,7 +75,7 @@ export const editCategory = createAsyncThunk(
   "/categories/editCategory",
   async ({ id, formData }) => {
     const response = await axios.put(
-      `http://localhost:5000/api/admin/categories/edit/${id}`,
+      `${API_URL}/api/admin/categories/edit/${id}`,
       formData,
       {
         withCredentials: true,

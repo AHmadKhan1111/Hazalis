@@ -2,6 +2,7 @@ const paypal = require("../../helpers/paypal");
 const Order = require("../../models/Order");
 const Cart = require("../../models/Cart");
 const Product = require("../../models/Product");
+const config = require("../../config/config");
 
 const createOrder = async (req, res) => {
   try {
@@ -26,8 +27,8 @@ const createOrder = async (req, res) => {
         payment_method: "paypal",
       },
       redirect_urls: {
-        return_url: "http://localhost:5173/shop/paypal-return",
-        cancel_url: "http://localhost:5173/shop/paypal-cancel",
+        return_url: config.paypal.returnUrl,
+        cancel_url: config.paypal.cancelUrl,
       },
       transactions: [
         {
@@ -76,7 +77,7 @@ const createOrder = async (req, res) => {
         await newlyCreatedOrder.save();
 
         const approvalURL = paymentInfo.links.find(
-          (link) => link.rel === "approval_url"
+          (link) => link.rel === "approval_url",
         ).href;
 
         res.status(201).json({

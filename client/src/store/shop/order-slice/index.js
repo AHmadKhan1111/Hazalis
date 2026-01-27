@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
+import { API_URL } from "@/config/api-config";
 
 const initialState = {
   approvalURL: null,
@@ -13,7 +14,7 @@ export const createNewOrder = createAsyncThunk(
   "/order/createNewOrder",
   async (orderData) => {
     const response = await axios.post(
-      "http://localhost:5000/api/shop/order/create",
+      `${API_URL}/api/shop/order/create`,
       orderData,
       {
         withCredentials: true,
@@ -28,7 +29,7 @@ export const capturePayment = createAsyncThunk(
   "/order/capturePayment",
   async ({ paymentId, payerId, orderId }) => {
     const response = await axios.post(
-      "http://localhost:5000/api/shop/order/capture",
+      `${API_URL}/api/shop/order/capture`,
       {
         paymentId,
         payerId,
@@ -47,7 +48,7 @@ export const getAllOrdersByUserId = createAsyncThunk(
   "/order/getAllOrdersByUserId",
   async (userId) => {
     const response = await axios.get(
-      `http://localhost:5000/api/shop/order/list/${userId}`,
+      `${API_URL}/api/shop/order/list/${userId}`,
       {
         withCredentials: true,
       },
@@ -61,7 +62,7 @@ export const getOrderDetails = createAsyncThunk(
   "/order/getOrderDetails",
   async (id) => {
     const response = await axios.get(
-      `http://localhost:5000/api/shop/order/details/${id}`,
+      `${API_URL}/api/shop/order/details/${id}`,
       {
         withCredentials: true,
       },
