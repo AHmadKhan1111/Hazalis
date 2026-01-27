@@ -26,9 +26,24 @@ mongoose
 const app = express();
 const PORT = config.port;
 
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://hamazstore.vercel.app", // User provided frontend URL
+  config.clientBaseUrl, // From env var
+].filter(Boolean); // Remove falsy values
+
 app.use(
   cors({
-    origin: config.clientBaseUrl,
+    origin: function (origin, callback) {
+      // Allow requests with no origin (like mobile apps or curl requests)
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.indexOf(origin) !== -1) {
+        callback(null, true);
+      } else {
+        console.log("Blocked by CORS:", origin); // Log blocked origins for debugging
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     methods: ["GET", "POST", "DELETE", "PUT"],
     allowedHeaders: [
       "Content-Type",
@@ -57,4 +72,9 @@ app.use("/api/shop/review", shopReviewRouter);
 
 app.use("/api/common/feature", commonFeatureRouter);
 
-app.listen(PORT, () => console.log(`Server is now running on port ${PORT}`));
+app.listen(PORT, () => {
+  console.log(`Server is now running on port ${PORT}`);
+  console.log("Allowed Origins:", allowedOrigins);
+  console.log("Environment:", config.nodeEnv);
+  console.log("Client Base URL:", config.clientBaseUrl);
+});

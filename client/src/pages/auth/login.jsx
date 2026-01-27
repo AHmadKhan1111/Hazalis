@@ -55,6 +55,16 @@ function AuthLogin() {
         formData={formData}
         setFormData={setFormData}
         onSubmit={onSubmit}
+        renderAfterInputs={() => (
+          <div className="flex justify-end p-0">
+            <Link
+              className="text-sm font-medium text-primary hover:underline"
+              to="/auth/forgot-password"
+            >
+              Forgot Password?
+            </Link>
+          </div>
+        )}
       />
     </div>
   );

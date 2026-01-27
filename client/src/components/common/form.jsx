@@ -17,6 +17,7 @@ function CommonForm({
   onSubmit,
   buttonText,
   isBtnDisabled,
+  renderAfterInputs,
 }) {
   function renderInputsByComponentType(getControlItem) {
     let element = null;
@@ -88,7 +89,7 @@ function CommonForm({
       case "checkbox":
         element = (
           <div className="flex items-center gap-2">
-             <Input
+            <Input
               type="checkbox"
               name={getControlItem.name}
               id={getControlItem.name}
@@ -137,6 +138,7 @@ function CommonForm({
           </div>
         ))}
       </div>
+      {renderAfterInputs ? renderAfterInputs() : null}
       <Button disabled={isBtnDisabled} type="submit" className="mt-2 w-full">
         {buttonText || "Submit"}
       </Button>

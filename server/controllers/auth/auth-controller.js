@@ -2,6 +2,8 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../../models/User");
 const config = require("../../config/config");
+const nodemailer = require("nodemailer");
+const crypto = require("crypto");
 
 //register
 const registerUser = async (req, res) => {
@@ -121,12 +123,140 @@ const authMiddleware = async (req, res, next) => {
     const decoded = jwt.verify(token, secret);
     req.user = decoded;
     next();
-  } catch (error) {
-    res.status(401).json({
+  } catch (e) {
+    console.log(e);
+    res.status(500).json({
       success: false,
-      message: "Unauthorised user!",
+      message: "Some error occurred",
     });
   }
 };
 
-module.exports = { registerUser, loginUser, logoutUser, authMiddleware };
+const forgotPassword = async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User with this email does not exist",
+      });
+    }
+
+    // Generate a reset token
+    const token = crypto.randomBytes(20).toString("hex");
+    user.resetPasswordToken = token;
+    user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
+
+    await user.save();
+
+    // Configure Nodemailer
+    const transporter = nodemailer.createTransport({
+      host: config.email.host,
+      port: config.email.port,
+      secure: config.email.port == 465, // true for 465, false for other ports
+      auth: {
+        user: config.email.user,
+        pass: config.email.pass,
+      },
+    });
+
+    const resetUrl = `${config.clientBaseUrl}/auth/reset-password?token=${token}`;
+
+    const mailOptions = {
+      from: config.email.from,
+      to: user.email,
+      subject: "Password Reset Request - HAZALIS",
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
+          <h2 style="color: #333; text-align: center;">HAZALIS</h2>
+          <hr />
+          <p>Hi ${user.userName || "Valued Customer"},</p>
+          <p>You are receiving this email because you (or someone else) have requested the reset of the password for your account.</p>
+          <p>Please click on the following button, or paste the link into your browser to complete the process:</p>
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="${resetUrl}" style="background-color: #000; color: #fff; padding: 12px 24px; text-decoration: none; border-radius: 5px; font-weight: bold;">Reset Password</a>
+          </div>
+          <p>If you did not request this, please ignore this email and your password will remain unchanged.</p>
+          <p>This link will expire in 1 hour.</p>
+          <hr />
+          <p style="font-size: 12px; color: #777;">&copy; 2024 HAZALIS. All rights reserved.</p>
+        </div>
+      `,
+    };
+
+    // If no email config, just log the link (for dev/testing)
+    if (!config.email.host || !config.email.user) {
+      console.log("-----------------------");
+      console.log("FORGOT PASSWORD LINK (Dev Mode):", resetUrl);
+      console.log("-----------------------");
+      return res.status(200).json({
+        success: true,
+        message:
+          "Development Mode: Reset link generated and logged. In production, this would be sent to your email.",
+      });
+    }
+
+    await transporter.sendMail(mailOptions);
+
+    res.status(200).json({
+      success: true,
+      message:
+        "An e-mail has been sent to " +
+        user.email +
+        " with further instructions.",
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      success: false,
+      message: "Error sending reset email",
+    });
+  }
+};
+
+const resetPassword = async (req, res) => {
+  const { token, newPassword } = req.body;
+
+  try {
+    const user = await User.findOne({
+      resetPasswordToken: token,
+      resetPasswordExpires: { $gt: Date.now() },
+    });
+
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        message: "Password reset token is invalid or has expired",
+      });
+    }
+
+    const hashPassword = await bcrypt.hash(newPassword, 12);
+    user.password = hashPassword;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpires = undefined;
+
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Your password has been successfully updated.",
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      success: false,
+      message: "Error resetting password",
+    });
+  }
+};
+
+module.exports = {
+  registerUser,
+  loginUser,
+  logoutUser,
+  authMiddleware,
+  forgotPassword,
+  resetPassword,
+};
