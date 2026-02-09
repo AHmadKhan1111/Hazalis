@@ -4,7 +4,10 @@ const config = {
   port: process.env.PORT || 5000,
   mongoUri: process.env.MONGO_URI,
   jwtSecret: process.env.JWT_SECRET,
-  clientBaseUrl: process.env.CLIENT_BASE_URL || "http://localhost:5173",
+  clientBaseUrl:
+    process.env.CLIENT_BASE_URL ||
+    process.env.CLIENT_URL ||
+    "http://localhost:5173",
   nodeEnv: process.env.NODE_ENV || "development",
   cloudinary: {
     cloudName: process.env.CLOUDINARY_CLOUD_NAME,
