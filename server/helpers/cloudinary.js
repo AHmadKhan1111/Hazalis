@@ -1,24 +1,61 @@
 const cloudinary = require("cloudinary").v2;
 const multer = require("multer");
 const config = require("../config/config");
+const streamifier = require("streamifier");
 
-cloudinary.config({
-  cloud_name: config.cloudinary.cloudName,
-  api_key: config.cloudinary.apiKey,
-  api_secret: config.cloudinary.apiSecret,
-});
-console.log("Connected to Cloudinary");
-
-const storage = new multer.memoryStorage();
-
-async function imageUploadUtil(file) {
-  const result = await cloudinary.uploader.upload(file, {
-    resource_type: "auto",
+/* =========================
+   CLOUDINARY CONFIG
+========================= */
+if (
+  !config.cloudinary.cloudName ||
+  !config.cloudinary.apiKey ||
+  !config.cloudinary.apiSecret
+) {
+  console.error("❌ Cloudinary ENV variables are missing");
+} else {
+  cloudinary.config({
+    cloud_name: config.cloudinary.cloudName,
+    api_key: config.cloudinary.apiKey,
+    api_secret: config.cloudinary.apiSecret,
   });
 
-  return result;
+  console.log("✅ Cloudinary configured");
 }
 
-const upload = multer({ storage });
+/* =========================
+   MULTER CONFIG
+========================= */
+const storage = multer.memoryStorage();
+const upload = multer({
+  storage,
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 5MB limit
+  },
+});
 
-module.exports = { upload, imageUploadUtil };
+/* =========================
+   IMAGE UPLOAD UTIL
+========================= */
+const imageUploadUtil = (fileBuffer, folder = "uploads") => {
+  return new Promise((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream(
+      {
+        folder,
+        resource_type: "auto",
+      },
+      (error, result) => {
+        if (error) {
+          return reject(error);
+        }
+        resolve(result);
+      }
+    );
+
+    streamifier.createReadStream(fileBuffer).pipe(stream);
+  });
+};
+
+module.exports = {
+  upload,
+  imageUploadUtil,
+};
