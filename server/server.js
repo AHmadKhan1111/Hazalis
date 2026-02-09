@@ -26,25 +26,19 @@ mongoose
 const app = express();
 const PORT = config.port;
 
-const allowedOrigins = [
-  "http://localhost:5173",
-  "https://hamazstore.vercel.app", // User provided frontend URL
-  config.clientBaseUrl, // From env var
-].filter(Boolean); // Remove falsy values
+const allowedOrigins = ["http://localhost:5173", config.clientBaseUrl];
 
 app.use(
   cors({
     origin: function (origin, callback) {
-      // Allow requests with no origin (like mobile apps or curl requests)
       if (!origin) return callback(null, true);
       if (allowedOrigins.indexOf(origin) !== -1) {
         callback(null, true);
       } else {
-        console.log("Blocked by CORS:", origin); // Log blocked origins for debugging
         callback(new Error("Not allowed by CORS"));
       }
     },
-    methods: ["GET", "POST", "DELETE", "PUT"],
+    methods: ["GET", "POST", "DELETE", "PUT", "OPTIONS"],
     allowedHeaders: [
       "Content-Type",
       "Authorization",

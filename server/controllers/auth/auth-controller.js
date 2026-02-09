@@ -78,7 +78,8 @@ const loginUser = async (req, res) => {
       .cookie("token", token, {
         httpOnly: true,
         secure: config.nodeEnv === "production",
-        sameSite: config.nodeEnv === "production" ? "none" : "lax",
+        sameSite: config.nodeEnv === "production" ? "None" : "Lax",
+        maxAge: 60 * 60 * 1000, // 1 hour (matches token expiry)
       })
       .json({
         success: true,
