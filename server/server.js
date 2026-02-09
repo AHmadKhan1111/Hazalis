@@ -26,7 +26,7 @@ mongoose
 const app = express();
 const PORT = config.port;
 
-const allowedOrigins = ["http://localhost:5173", config.clientBaseUrl];
+const allowedOrigins = ["http://localhost:5173","https://hazalis.com", config.clientBaseUrl];
 
 app.use(
   cors({
