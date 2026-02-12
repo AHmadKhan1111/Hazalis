@@ -19,6 +19,27 @@ const shopReviewRouter = require("./routes/shop/review-routes");
 const commonFeatureRouter = require("./routes/common/feature-routes");
 
 const app = express();
+const fs = require("fs");
+const path = require("path");
+
+// LOGGING FUNCTION
+const logError = (msg) => {
+  const logPath = path.join(__dirname, "server_startup.log");
+  const timestamp = new Date().toISOString();
+  fs.appendFileSync(logPath, `[${timestamp}] ${msg}\n`);
+};
+
+process.on("uncaughtException", (err) => {
+  logError(`UNCAUGHT EXCEPTION: ${err.stack}`);
+  process.exit(1);
+});
+
+process.on("unhandledRejection", (err) => {
+  logError(`UNHANDLED REJECTION: ${err.stack}`);
+  process.exit(1);
+});
+
+logError("Starting server initialization...");
 
 /* =========================
    DATABASE
