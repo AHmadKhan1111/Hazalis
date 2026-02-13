@@ -67,19 +67,7 @@ export const addProductFormElements = [
       { id: "accessories", label: "Accessories" },
     ],
   },
-  {
-    label: "Brand",
-    name: "brand",
-    componentType: "select",
-    options: [
-      { id: "nike", label: "Nike" },
-      { id: "adidas", label: "Adidas" },
-      { id: "puma", label: "Puma" },
-      { id: "levi", label: "Levi's" },
-      { id: "zara", label: "Zara" },
-      { id: "h&m", label: "H&M" },
-    ],
-  },
+
   {
     label: "Price",
     name: "price",
@@ -171,15 +159,6 @@ export const categoryOptionsMap = {
   accessories: "Accessories",
 };
 
-export const brandOptionsMap = {
-  nike: "Nike",
-  adidas: "Adidas",
-  puma: "Puma",
-  levi: "Levi",
-  zara: "Zara",
-  "h&m": "H&M",
-};
-
 export const filterOptions = {
   category: [
     { id: "wallet", label: "Wallet" },
@@ -188,14 +167,6 @@ export const filterOptions = {
     { id: "duffle-bags", label: "Duffle Bags" },
     { id: "jacket", label: "Jacket" },
     { id: "accessories", label: "Accessories" },
-  ],
-  brand: [
-    { id: "nike", label: "Nike" },
-    { id: "adidas", label: "Adidas" },
-    { id: "puma", label: "Puma" },
-    { id: "levi", label: "Levi's" },
-    { id: "zara", label: "Zara" },
-    { id: "h&m", label: "H&M" },
   ],
 };
 

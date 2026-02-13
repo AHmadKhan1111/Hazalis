@@ -6,7 +6,7 @@ const ProductSchema = new mongoose.Schema(
     title: String,
     description: String,
     category: String,
-    brand: String,
+
     price: Number,
     salePrice: Number,
     totalStock: Number,
@@ -14,7 +14,7 @@ const ProductSchema = new mongoose.Schema(
     isFeatured: Boolean,
     isNewArrival: Boolean,
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 module.exports = mongoose.model("Product", ProductSchema);

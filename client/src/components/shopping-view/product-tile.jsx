@@ -1,6 +1,13 @@
-import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from "../ui/card";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "../ui/card";
 import { Button } from "../ui/button";
-import { brandOptionsMap, categoryOptionsMap } from "@/config";
+import { categoryOptionsMap } from "@/config";
 import { Badge } from "../ui/badge";
 
 function ShoppingProductTile({
@@ -10,7 +17,10 @@ function ShoppingProductTile({
 }) {
   return (
     <Card className="w-full max-w-sm mx-auto group hover:shadow-xl transition-all duration-300 overflow-hidden">
-      <div onClick={() => handleGetProductDetails(product?._id)} className="cursor-pointer">
+      <div
+        onClick={() => handleGetProductDetails(product?._id)}
+        className="cursor-pointer"
+      >
         <div className="relative overflow-hidden">
           <img
             src={product?.image}
@@ -31,14 +41,16 @@ function ShoppingProductTile({
             </Badge>
           ) : null}
         </div>
-        
+
         <CardHeader className="p-4 pb-0">
-          <CardTitle className="text-xl font-bold truncate">{product?.title}</CardTitle>
+          <CardTitle className="text-xl font-bold truncate">
+            {product?.title}
+          </CardTitle>
           <CardDescription className="text-sm text-muted-foreground mb-2">
-             {categoryOptionsMap[product?.category]} - {brandOptionsMap[product?.brand]}
+            {categoryOptionsMap[product?.category]}
           </CardDescription>
         </CardHeader>
-        
+
         <CardContent className="p-4 pt-0">
           <div className="flex justify-between items-center">
             <span
@@ -56,7 +68,7 @@ function ShoppingProductTile({
           </div>
         </CardContent>
       </div>
-      
+
       <CardFooter className="p-4 pt-0 pb-4">
         {product?.totalStock === 0 ? (
           <Button className="w-full opacity-60 cursor-not-allowed">
